@@ -78,7 +78,7 @@ parser.add_argument('--reg', type=float, default=1e-5,
                     help='weight decay (default: 1e-5)')
 parser.add_argument('--seed', type=int, default=1, 
                     help='random seed for reproducible experiment (default: 1)')
-parser.add_argument('--k', type=int, default=10, help='number of folds (default: 10)')
+parser.add_argument('--k', type=int, default=1, help='number of folds (default: 10)')
 parser.add_argument('--k_start', type=int, default=-1, help='start fold (default: -1, last fold)')
 parser.add_argument('--k_end', type=int, default=-1, help='end fold (default: -1, first fold)')
 parser.add_argument('--results_dir', default='./results', help='results directory (default: ./results)')
@@ -97,7 +97,7 @@ parser.add_argument('--model_type', type=str, choices=['clam_sb', 'clam_mb', 'mi
 parser.add_argument('--exp_code', type=str, help='experiment code for saving results')
 parser.add_argument('--weighted_sample', action='store_true', default=False, help='enable weighted sampling')
 parser.add_argument('--model_size', type=str, choices=['small', 'big'], default='small', help='size of model, does not affect mil')
-parser.add_argument('--task', type=str, choices=['task_1_tumor_vs_normal',  'task_2_tumor_subtyping'])
+parser.add_argument('--task', type=str, choices=['task_1_tumor_vs_normal',  'task_2_tumor_subtyping', 'task_3_luad'])
 ### CLAM specific options
 parser.add_argument('--no_inst_cluster', action='store_true', default=False,
                      help='disable instance-level clustering')
@@ -126,7 +126,7 @@ def seed_torch(seed=7):
 seed_torch(args.seed)
 
 encoding_size = 1024
-settings = {'num_splits': args.k, 
+settings = {'num_splits': args.k,
             'k_start': args.k_start,
             'k_end': args.k_end,
             'task': args.task,
@@ -175,6 +175,18 @@ elif args.task == 'task_2_tumor_subtyping':
 
     if args.model_type in ['clam_sb', 'clam_mb']:
         assert args.subtyping 
+        
+
+elif args.task == 'task_3_luad':
+    args.n_classes=2
+    dataset = Generic_MIL_Dataset(csv_path = 'dataset_csv/LUAD_data.csv',
+                            data_dir= os.path.join(args.data_root_dir, 'luad_features'),
+                            shuffle = False, 
+                            seed = args.seed, 
+                            print_info = True,
+                            label_dict = {'WT':0, 'MUT':1},
+                            patient_strat=False,
+                            ignore=[])
         
 else:
     raise NotImplementedError
