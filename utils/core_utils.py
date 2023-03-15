@@ -503,7 +503,7 @@ def summary(model, loader, n_classes):
 
         acc_logger.log(Y_hat, label)
         probs = Y_prob.cpu().numpy()
-        attention_map = A.cpu().numpy()[:,1]
+        attention_map = A.cpu().numpy()[:,0]
         
         all_probs[batch_idx] = probs
         all_labels[batch_idx] = label.item()
@@ -515,7 +515,7 @@ def summary(model, loader, n_classes):
     test_error /= len(loader)
 
     if n_classes == 2:
-        auc = roc_auc_score(all_labels, all_probs[:, 0])
+        auc = roc_auc_score(all_labels, all_probs[:, 1])
         aucs = []
     else:
         aucs = []
