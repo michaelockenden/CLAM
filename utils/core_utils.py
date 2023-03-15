@@ -499,14 +499,16 @@ def summary(model, loader, n_classes):
         data, label = data.to(device), label.to(device)
         slide_id = slide_ids.iloc[batch_idx]
         with torch.no_grad():
-            logits, Y_prob, Y_hat, _, _ = model(data)
+            logits, Y_prob, Y_hat, A, _ = model(data)
 
         acc_logger.log(Y_hat, label)
         probs = Y_prob.cpu().numpy()
+        attention_map = A.cpu().numpy()[:,1]
+        
         all_probs[batch_idx] = probs
         all_labels[batch_idx] = label.item()
         
-        patient_results.update({slide_id: {'slide_id': np.array(slide_id), 'prob': probs, 'label': label.item()}})
+        patient_results.update({slide_id: {'slide_id': np.array(slide_id), 'prob': probs, 'label': label.item(), 'attention': attention_map}})
         error = calculate_error(Y_hat, label)
         test_error += error
 
