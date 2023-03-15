@@ -515,7 +515,7 @@ def summary(model, loader, n_classes):
     test_error /= len(loader)
 
     if n_classes == 2:
-        auc = roc_auc_score(all_labels, all_probs[:, 1])
+        auc = roc_auc_score(all_labels, all_probs[:, 0])
         aucs = []
     else:
         aucs = []
